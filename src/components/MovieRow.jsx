@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import tmdb from '../services/tmdb';
 
-function MovieRow({ title, fetchUrl }) {
+function MovieRow({ title, fetchUrl, onMovieClick }) {
   const [movies, setMovies] = useState([]);
   const rowRef = useRef(null);
 
@@ -45,6 +45,7 @@ function MovieRow({ title, fetchUrl }) {
           {movies.map((movie) => (
             <div 
               key={movie.id}
+              onClick={() => onMovieClick(movie)}
               className="min-w-[200px] md:min-w-[280px] cursor-pointer transform hover:scale-105 transition-transform duration-300"
             >
               <img 
