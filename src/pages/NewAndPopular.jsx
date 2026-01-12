@@ -27,9 +27,10 @@ function NewAndPopular() {
 
       <div className="relative -mt-32 z-10">
         <MovieRow
-          title="Trending This Week"
+          title="Top 10 This Week"
           fetchUrl={() => tmdb.getTrending('all', 'week')}
           onMovieClick={handleMovieClick}
+          showTop10={true}
         />
         <MovieRow
           title="Trending Today"

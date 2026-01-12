@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import tmdb from '../services/tmdb';
 import { auth, db } from '../config/firebase';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import MaturityBadge from './MaturityBadge';
+import { getMaturityRating } from '../utils/maturityRating';
+import { simulateWatching, getWatchProgress } from '../utils/watchProgress';
 
-function MovieModal({ movieId, mediaType, onClose }) {
+function MovieModal({ movieId, mediaType, onClose, shouldResume = false }) {
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [inMyList, setInMyList] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [savedProgress, setSavedProgress] = useState(0);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -15,6 +19,12 @@ function MovieModal({ movieId, mediaType, onClose }) {
       try {
         const data = await tmdb.getDetails(mediaType, movieId);
         setDetails(data);
+
+        // If this is a Continue Watching item, fetch the saved progress
+        if (shouldResume && movieId && mediaType) {
+          const progress = await getWatchProgress(movieId, mediaType);
+          setSavedProgress(progress);
+        }
       } catch (err) {
         console.error('Error fetching details:', err);
       } finally {
@@ -25,7 +35,7 @@ function MovieModal({ movieId, mediaType, onClose }) {
     if (movieId) {
       fetchDetails();
     }
-  }, [movieId, mediaType]);
+  }, [movieId, mediaType, shouldResume]);
 
   // Check if movie is in user's list or liked
   useEffect(() => {
@@ -49,6 +59,24 @@ function MovieModal({ movieId, mediaType, onClose }) {
 
     checkUserData();
   }, [movieId, mediaType]);
+
+  // Simulate watching progress - ONLY for Continue Watching items
+  useEffect(() => {
+    if (!movieId || !mediaType) return;
+
+    let interval = null;
+
+    // Start simulating watch progress after 3 seconds (user is "watching")
+    const timer = setTimeout(async () => {
+      interval = await simulateWatching(movieId, mediaType, shouldResume);
+    }, 3000);
+
+    // Cleanup function
+    return () => {
+      clearTimeout(timer);
+      if (interval) clearInterval(interval);
+    };
+  }, [movieId, mediaType, shouldResume]);
 
   if (!movieId) return null;
 
@@ -137,6 +165,12 @@ function MovieModal({ movieId, mediaType, onClose }) {
     v => v.type === 'Trailer' && v.site === 'YouTube'
   );
 
+  // Calculate start time for resume (assuming trailer is ~2 minutes / 120 seconds)
+  // Map progress percentage to video timestamp
+  const startTime = shouldResume && savedProgress > 0
+    ? Math.floor((savedProgress / 100) * 120) // 120 seconds = average trailer length
+    : 0;
+
   return (
     <>
       <style>{`
@@ -203,7 +237,7 @@ function MovieModal({ movieId, mediaType, onClose }) {
             <div style={{ position: 'relative', paddingTop: '56.25%' }}>
               {trailer ? (
                 <iframe
-                  src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0`}
+                  src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&start=${startTime}`}
                   style={{
                     position: 'absolute',
                     top: 0,
@@ -295,6 +329,7 @@ function MovieModal({ movieId, mediaType, onClose }) {
                     <span className="text-gray-400">
                       {details.release_date?.split('-')[0] || details.first_air_date?.split('-')[0]}
                     </span>
+                    <MaturityBadge rating={getMaturityRating(details)} size="md" />
                     {details.runtime && (
                       <span className="text-gray-400">{details.runtime} min</span>
                     )}

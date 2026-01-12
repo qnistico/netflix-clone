@@ -1,18 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import tmdb from '../services/tmdb';
+import Top10Badge from './Top10Badge';
 
-function MovieRow({ title, fetchUrl, onMovieClick }) {
+function MovieRow({ title, fetchUrl, onMovieClick, showTop10 = false }) {
   const [movies, setMovies] = useState([]);
   const rowRef = useRef(null);
 
   useEffect(() => {
     const fetchMovies = async () => {
       const data = await fetchUrl();
-      setMovies(data.results);
+      // If showTop10 is enabled, limit to 10 items
+      const results = showTop10 ? data.results.slice(0, 10) : data.results;
+      setMovies(results);
     };
 
     fetchMovies();
-  }, [fetchUrl]);
+  }, [fetchUrl, showTop10]);
 
   const scroll = (direction) => {
     if (rowRef.current) {
@@ -42,13 +45,14 @@ function MovieRow({ title, fetchUrl, onMovieClick }) {
           className="flex space-x-2 overflow-x-scroll scrollbar-hide ofy-hide"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {movies.map((movie) => (
-            <div 
+          {movies.map((movie, index) => (
+            <div
               key={movie.id}
               onClick={() => onMovieClick(movie)}
-              className="min-w-[200px] md:min-w-[280px] cursor-pointer transform hover:scale-105 transition-transform duration-300"
+              className="min-w-[200px] md:min-w-[280px] cursor-pointer transform hover:scale-105 transition-transform duration-300 relative"
             >
-              <img 
+              {showTop10 && index < 10 && <Top10Badge rank={index + 1} />}
+              <img
                 src={tmdb.getImageUrl(movie.backdrop_path || movie.poster_path, 'w500')}
                 alt={movie.title || movie.name}
                 className="rounded-lg w-full h-[120px] md:h-[160px] object-cover"

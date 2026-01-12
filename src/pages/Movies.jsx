@@ -4,6 +4,7 @@ import Hero from '../components/Hero';
 import MovieRow from '../components/MovieRow';
 import MovieModal from '../components/MovieModal';
 import Footer from '../components/Footer';
+import ContentFilters from '../components/ContentFilters';
 import tmdb from '../services/tmdb';
 
 // TMDB Movie Genre IDs
@@ -30,6 +31,7 @@ const MOVIE_GENRES = {
 
 function Movies() {
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [filters, setFilters] = useState({ genre: 'all', year: 'all' });
 
   const handleMovieClick = (movie) => {
     setSelectedMovie({
@@ -42,12 +44,32 @@ function Movies() {
     setSelectedMovie(null);
   };
 
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const hasFilters = filters.genre !== 'all' || filters.year !== 'all';
+
   return (
     <div className="min-h-screen bg-[#141414]">
       <Navbar />
       <Hero onMovieClick={handleMovieClick} />
 
       <div className="relative -mt-32 z-10">
+        <ContentFilters
+          onFilterChange={handleFilterChange}
+          genres={MOVIE_GENRES}
+          type="movie"
+        />
+
+        {hasFilters && (
+          <MovieRow
+            title="Filtered Results"
+            fetchUrl={() => tmdb.getFilteredMovies(filters)}
+            onMovieClick={handleMovieClick}
+            key={`${filters.genre}-${filters.year}`}
+          />
+        )}
         <MovieRow
           title="Popular Movies"
           fetchUrl={tmdb.getPopularMovies}

@@ -33,6 +33,32 @@ export const tmdb = {
     return res.json();
   },
 
+  // Get filtered movies
+  getFilteredMovies: async (filters = {}) => {
+    let url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc`;
+    if (filters.genre && filters.genre !== 'all') {
+      url += `&with_genres=${filters.genre}`;
+    }
+    if (filters.year && filters.year !== 'all') {
+      url += `&primary_release_year=${filters.year}`;
+    }
+    const res = await fetch(url);
+    return res.json();
+  },
+
+  // Get filtered TV shows
+  getFilteredTVShows: async (filters = {}) => {
+    let url = `${BASE_URL}/discover/tv?api_key=${API_KEY}&sort_by=popularity.desc`;
+    if (filters.genre && filters.genre !== 'all') {
+      url += `&with_genres=${filters.genre}`;
+    }
+    if (filters.year && filters.year !== 'all') {
+      url += `&first_air_date_year=${filters.year}`;
+    }
+    const res = await fetch(url);
+    return res.json();
+  },
+
   // Get top rated movies
   getTopRatedMovies: async () => {
     const res = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}`);
@@ -47,7 +73,10 @@ export const tmdb = {
 
   // Get movie/show details
   getDetails: async (mediaType, id) => {
-    const res = await fetch(`${BASE_URL}/${mediaType}/${id}?api_key=${API_KEY}&append_to_response=videos,credits`);
+    const appendToResponse = mediaType === 'movie'
+      ? 'videos,credits,release_dates'
+      : 'videos,credits,content_ratings';
+    const res = await fetch(`${BASE_URL}/${mediaType}/${id}?api_key=${API_KEY}&append_to_response=${appendToResponse}`);
     return res.json();
   },
 
