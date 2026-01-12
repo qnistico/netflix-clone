@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import MovieRow from '../components/MovieRow';
 import MovieModal from '../components/MovieModal';
+import Footer from '../components/Footer';
 import tmdb from '../services/tmdb';
 
 // TMDB Movie Genre IDs
@@ -112,6 +113,8 @@ function Movies() {
           onClose={closeModal}
         />
       )}
+
+      <Footer />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import MovieRow from '../components/MovieRow';
 import MovieModal from '../components/MovieModal';
+import Footer from '../components/Footer';
 import tmdb from '../services/tmdb';
 
 function NewAndPopular() {
@@ -75,6 +76,8 @@ function NewAndPopular() {
           onClose={closeModal}
         />
       )}
+
+      <Footer />
     </div>
   );
 }

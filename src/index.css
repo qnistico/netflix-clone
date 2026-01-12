@@ -68,3 +68,7 @@ body {
 .ofy-hide {
   overflow-y: hidden;
 }
+
+button {
+  cursor: pointer;
+}

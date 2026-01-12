@@ -231,24 +231,11 @@ function MovieModal({ movieId, mediaType, onClose }) {
                     borderTopRightRadius: '0.5rem'
                   }}
                 >
-                  <div style={{ 
+                  <div style={{
                     position: 'absolute',
                     inset: 0,
                     background: 'linear-gradient(to top, #181818, transparent)'
                   }}></div>
-                  {/* Title only shows when no trailer */}
-                  <div style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    padding: '2rem',
-                    background: 'linear-gradient(to top, #181818, transparent)'
-                  }}>
-                    <h2 className="text-3xl md:text-4xl font-bold mb-2">
-                      {details.title || details.name}
-                    </h2>
-                  </div>
                 </div>
               )}
             </div>

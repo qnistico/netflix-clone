@@ -28,6 +28,18 @@ function Navbar() {
     return () => unsubscribe();
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showDropdown && !event.target.closest('.profile-dropdown-container')) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDropdown]);
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -111,7 +123,7 @@ function Navbar() {
                 onClick={() => setShowSearch(true)}
                 className="hover:text-gray-300 transition-all duration-200 hover:scale-110 active:scale-95"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
@@ -119,12 +131,12 @@ function Navbar() {
           </div>
           
           {user ? (
-            <div className="relative">
+            <div className="relative profile-dropdown-container">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center space-x-2 transition-all duration-200 hover:scale-105"
+                className="flex items-center space-x-2 transition-all duration-200 hover:scale-105 cursor-pointer"
               >
-                <div className="w-8 h-8 rounded bg-red-600 flex items-center justify-center text-sm font-semibold">
+                <div className="w-8 h-8 rounded bg-red-600 flex items-center justify-center text-sm font-semibold cursor-pointer">
                   {user.email?.[0].toUpperCase()}
                 </div>
               </button>

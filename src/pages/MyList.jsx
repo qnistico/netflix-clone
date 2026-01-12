@@ -6,6 +6,7 @@ import tmdb from '../services/tmdb';
 import Navbar from '../components/Navbar';
 import MovieModal from '../components/MovieModal';
 import SkeletonCard from '../components/SkeletonCard';
+import Footer from '../components/Footer';
 
 function MyList() {
   const [myList, setMyList] = useState([]);
@@ -158,6 +159,8 @@ function MyList() {
           onClose={() => setSelectedMovie(null)}
         />
       )}
+
+      <Footer />
     </div>
     </>
   );
