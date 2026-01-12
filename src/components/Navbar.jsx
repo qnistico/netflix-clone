@@ -59,11 +59,11 @@ function Navbar() {
           
           {/* Nav Links */}
           <div className="hidden md:flex space-x-6 text-sm">
-            <Link to="/" className="hover:text-gray-300 transition">Home</Link>
-            <a href="#" className="hover:text-gray-300 transition">TV Shows</a>
-            <a href="#" className="hover:text-gray-300 transition">Movies</a>
-            <a href="#" className="hover:text-gray-300 transition">New & Popular</a>
-            {user && <Link to="/my-list" className="hover:text-gray-300 transition">My List</Link>}
+            <Link to="/" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">Home</Link>
+            <a href="#" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">TV Shows</a>
+            <a href="#" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">Movies</a>
+            <a href="#" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">New & Popular</a>
+            {user && <Link to="/my-list" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">My List</Link>}
           </div>
         </div>
 
@@ -72,14 +72,26 @@ function Navbar() {
           {/* Search */}
           <div className="relative">
             {showSearch ? (
-              <form onSubmit={handleSearch} className="flex items-center">
+              <form onSubmit={handleSearch} className="flex items-center animate-[slideIn_0.2s_ease-out]">
+                <style>{`
+                  @keyframes slideIn {
+                    from {
+                      opacity: 0;
+                      transform: translateX(20px);
+                    }
+                    to {
+                      opacity: 1;
+                      transform: translateX(0);
+                    }
+                  }
+                `}</style>
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search..."
                   autoFocus
-                  className="bg-black/70 border border-white text-white px-4 py-1 rounded-md focus:outline-none focus:border-red-600 w-48 md:w-64"
+                  className="bg-black/70 border border-white text-white px-4 py-1 rounded-md focus:outline-none focus:border-red-600 w-48 md:w-64 transition-all duration-200"
                 />
                 <button
                   type="button"
@@ -87,7 +99,7 @@ function Navbar() {
                     setShowSearch(false);
                     setSearchQuery('');
                   }}
-                  className="ml-2 hover:text-gray-300 transition"
+                  className="ml-2 hover:text-gray-300 transition-all duration-200 hover:scale-110 active:scale-95"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -97,7 +109,7 @@ function Navbar() {
             ) : (
               <button
                 onClick={() => setShowSearch(true)}
-                className="hover:text-gray-300 transition"
+                className="hover:text-gray-300 transition-all duration-200 hover:scale-110 active:scale-95"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -108,9 +120,9 @@ function Navbar() {
           
           {user ? (
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 transition-all duration-200 hover:scale-105"
               >
                 <div className="w-8 h-8 rounded bg-red-600 flex items-center justify-center text-sm font-semibold">
                   {user.email?.[0].toUpperCase()}
@@ -118,24 +130,38 @@ function Navbar() {
               </button>
 
               {showDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-black/90 border border-gray-700 rounded shadow-lg">
-                  <div className="p-3 border-b border-gray-700">
-                    <p className="text-sm truncate">{user.email}</p>
-                    {user.email === 'demo@netflix.com' && (
-                      <span className="text-xs text-yellow-400">Demo Account</span>
-                    )}
+                <>
+                  <style>{`
+                    @keyframes dropdownSlideIn {
+                      from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                      }
+                      to {
+                        opacity: 1;
+                        transform: translateY(0);
+                      }
+                    }
+                  `}</style>
+                  <div className="absolute right-0 mt-2 w-48 bg-black/90 border border-gray-700 rounded shadow-lg animate-[dropdownSlideIn_0.2s_ease-out]">
+                    <div className="p-3 border-b border-gray-700">
+                      <p className="text-sm truncate">{user.email}</p>
+                      {user.email === 'demo@netflix.com' && (
+                        <span className="text-xs text-yellow-400">Demo Account</span>
+                      )}
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-3 py-2 hover:bg-gray-800 text-sm transition-all duration-200"
+                    >
+                      Sign Out
+                    </button>
                   </div>
-                  <button 
-                    onClick={handleLogout}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-800 text-sm transition"
-                  >
-                    Sign Out
-                  </button>
-                </div>
+                </>
               )}
             </div>
           ) : (
-            <Link to="/login" className="text-sm hover:text-gray-300 transition bg-red-600 px-4 py-2 rounded">
+            <Link to="/login" className="text-sm hover:text-gray-300 transition-all duration-200 bg-red-600 hover:bg-red-700 px-4 py-2 rounded hover:scale-105">
               Sign In
             </Link>
           )}

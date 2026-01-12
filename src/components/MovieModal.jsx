@@ -138,36 +138,55 @@ function MovieModal({ movieId, mediaType, onClose }) {
   );
 
   return (
-    <div 
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 50,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        padding: '1rem',
-        overflowY: 'auto'
-      }}
-      onClick={onClose}
-    >
-      <div 
+    <>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      `}</style>
+      <div
         style={{
-          position: 'relative',
-          backgroundColor: '#181818',
-          borderRadius: '0.5rem',
-          width: '100%',
-          maxWidth: '56rem',
-          margin: '2rem 0',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          position: 'fixed',
+          inset: 0,
+          zIndex: 50,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: '1rem',
+          overflowY: 'auto',
+          animation: 'fadeIn 0.2s ease-out'
         }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={onClose}
       >
+        <div
+          style={{
+            position: 'relative',
+            backgroundColor: '#181818',
+            borderRadius: '0.5rem',
+            width: '100%',
+            maxWidth: '56rem',
+            margin: '2rem 0',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            animation: 'scaleIn 0.25s ease-out'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Close Button */}
-        <button 
+        <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-10 h-10 bg-[#181818] hover:bg-gray-700 rounded-full flex items-center justify-center transition"
+          className="absolute top-4 right-4 z-10 w-10 h-10 bg-[#181818] hover:bg-gray-700 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -235,19 +254,19 @@ function MovieModal({ movieId, mediaType, onClose }) {
             </div>
 
             {/* Content Section */}
-            <div className="p-8">
+            <div className="p-4 md:p-8">
               {/* Title (shows for all) */}
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
                 {details.title || details.name}
               </h2>
               {/* Action Buttons */}
-              <div className="flex gap-3 mb-6">
+              <div className="flex gap-2 md:gap-3 mb-6">
                 <button
                   onClick={handleToggleList}
-                  className={`w-10 h-10 border-2 rounded-full flex items-center justify-center transition ${
+                  className={`w-10 h-10 border-2 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 ${
                     inMyList
                       ? 'bg-white border-white text-black'
-                      : 'border-gray-400 hover:border-white'
+                      : 'border-gray-400 hover:border-white hover:bg-white/10'
                   }`}
                   title={inMyList ? 'Remove from My List' : 'Add to My List'}
                 >
@@ -264,10 +283,10 @@ function MovieModal({ movieId, mediaType, onClose }) {
 
                 <button
                   onClick={handleToggleLike}
-                  className={`w-10 h-10 border-2 rounded-full flex items-center justify-center transition ${
+                  className={`w-10 h-10 border-2 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 ${
                     isLiked
                       ? 'bg-white border-white text-black'
-                      : 'border-gray-400 hover:border-white'
+                      : 'border-gray-400 hover:border-white hover:bg-white/10'
                   }`}
                   title={isLiked ? 'Unlike' : 'Like'}
                 >
@@ -278,11 +297,11 @@ function MovieModal({ movieId, mediaType, onClose }) {
               </div>
 
               {/* Info Grid */}
-              <div className="grid md:grid-cols-3 gap-8">
+              <div className="grid md:grid-cols-3 gap-4 md:gap-8">
                 {/* Left Column - Main Info */}
-                <div className="md:col-span-2 flex flex-col gap-4">
+                <div className="md:col-span-2 flex flex-col gap-3 md:gap-4">
                   {/* Meta Info */}
-                  <div className="flex items-center gap-4 text-sm">
+                  <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm">
                     <span className="text-green-500 font-semibold">
                       {Math.round(details.vote_average * 10)}% Match
                     </span>
@@ -298,13 +317,13 @@ function MovieModal({ movieId, mediaType, onClose }) {
                   </div>
 
                   {/* Overview */}
-                  <p className="text-gray-300 leading-relaxed">
+                  <p className="text-sm md:text-base text-gray-300 leading-relaxed">
                     {details.overview}
                   </p>
                 </div>
 
                 {/* Right Column - Cast & Genres */}
-                <div className="flex flex-col gap-4 text-sm">
+                <div className="flex flex-col gap-3 md:gap-4 text-xs md:text-sm">
                   <div>
                     <span className="text-gray-400">Genres: </span>
                     <span className="text-white">
@@ -336,6 +355,7 @@ function MovieModal({ movieId, mediaType, onClose }) {
         ) : null}
       </div>
     </div>
+    </>
   );
 }
 

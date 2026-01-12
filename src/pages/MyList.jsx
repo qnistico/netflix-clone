@@ -5,11 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import tmdb from '../services/tmdb';
 import Navbar from '../components/Navbar';
 import MovieModal from '../components/MovieModal';
+import SkeletonCard from '../components/SkeletonCard';
 
 function MyList() {
   const [myList, setMyList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [animateItems, setAnimateItems] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +44,8 @@ function MyList() {
 
           const details = await Promise.all(detailsPromises);
           setMyList(details.filter(item => item !== null));
+          // Trigger stagger animation
+          setTimeout(() => setAnimateItems(true), 50);
         }
       } catch (err) {
         console.error('Error fetching my list:', err);
@@ -72,15 +76,34 @@ function MyList() {
   };
 
   return (
-    <div className="min-h-screen bg-[#141414]">
-      <Navbar />
+    <>
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .stagger-item {
+          animation: fadeInUp 0.4s ease-out forwards;
+          opacity: 0;
+        }
+      `}</style>
+      <div className="min-h-screen bg-[#141414]">
+        <Navbar />
 
-      <div className="pt-24 px-4 md:px-12 pb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-8">My List</h1>
+      <div className="pt-24 px-4 md:px-8 lg:px-12 pb-12">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8">My List</h1>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+            {[...Array(8)].map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
         ) : myList.length === 0 ? (
           <div className="text-center py-20">
@@ -88,48 +111,33 @@ function MyList() {
             <p className="text-gray-500">Add titles you want to watch by clicking the + button</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {myList.map((item) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+            {myList.map((item, index) => (
               <div
                 key={`${item.mediaType}_${item.id}`}
-                className="relative group cursor-pointer"
+                className={`relative group cursor-pointer ${animateItems ? 'stagger-item' : ''}`}
+                style={animateItems ? { animationDelay: `${index * 0.05}s` } : {}}
               >
-                <img
-                  src={tmdb.getImageUrl(item.poster_path, 'w500')}
-                  alt={item.title || item.name}
-                  className="w-full rounded-md transition-transform group-hover:scale-105"
-                  onClick={() => setSelectedMovie({ id: item.id, mediaType: item.mediaType })}
-                />
+                <div className="relative overflow-hidden rounded-md transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-black/50 group-hover:-translate-y-2">
+                  <img
+                    src={tmdb.getImageUrl(item.poster_path, 'w500')}
+                    alt={item.title || item.name}
+                    className="w-full transition-transform duration-300 group-hover:scale-110"
+                    onClick={() => setSelectedMovie({ id: item.id, mediaType: item.mediaType })}
+                  />
 
-                {/* Overlay on hover */}
-                <div
-  className="
-    absolute inset-0
-    bg-opacity-0 group-hover:bg-opacity-60
-    transition-all rounded-md
-    flex items-center justify-center
-    opacity-0 group-hover:opacity-100
-    pointer-events-none
-    mylist-item-hoverstate
-  "
->
-
-
-                 <button
-  onClick={(e) => {
-    e.stopPropagation();
-    handleRemove(item.mediaType, item.id);
-  }}
-  className="
-    pointer-events-auto
-    bg-red-600 hover:bg-red-700
-    text-white px-4 py-2
-    rounded-md font-semibold transition
-  "
->
-  Remove
-</button>
-
+                  {/* Overlay on hover */}
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemove(item.mediaType, item.id);
+                      }}
+                      className="pointer-events-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-semibold transition-all duration-200 hover:scale-110 active:scale-95"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
 
                 {/* Title below poster */}
@@ -151,6 +159,7 @@ function MyList() {
         />
       )}
     </div>
+    </>
   );
 }
 
