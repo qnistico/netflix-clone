@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
-import { auth } from '../config/firebase';
-import { getFirestore, doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import tmdb from '../services/tmdb';
 
 function MovieModal({ movieId, mediaType, onClose }) {
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [inList, setInList] = useState(false);
-  const db = getFirestore();
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -15,13 +11,6 @@ function MovieModal({ movieId, mediaType, onClose }) {
       try {
         const data = await tmdb.getDetails(mediaType, movieId);
         setDetails(data);
-        
-        // Check if movie is in user's list
-        if (auth.currentUser) {
-          const docRef = doc(db, 'users', auth.currentUser.uid, 'myList', `${movieId}`);
-          const docSnap = await getDoc(docRef);
-          setInList(docSnap.exists());
-        }
       } catch (err) {
         console.error('Error fetching details:', err);
       } finally {
@@ -32,38 +21,7 @@ function MovieModal({ movieId, mediaType, onClose }) {
     if (movieId) {
       fetchDetails();
     }
-  }, [movieId, mediaType, db]);
-
-  const toggleMyList = async () => {
-    if (!auth.currentUser) {
-      alert('Please sign in to add to your list');
-      return;
-    }
-
-    try {
-      const docRef = doc(db, 'users', auth.currentUser.uid, 'myList', `${movieId}`);
-      
-      if (inList) {
-        // Remove from list
-        await deleteDoc(docRef);
-        setInList(false);
-      } else {
-        // Add to list
-        await setDoc(docRef, {
-          id: movieId,
-          mediaType,
-          title: details.title || details.name,
-          poster_path: details.poster_path,
-          backdrop_path: details.backdrop_path,
-          addedAt: new Date().toISOString()
-        });
-        setInList(true);
-      }
-    } catch (err) {
-      console.error('Error updating list:', err);
-      alert('Failed to update list');
-    }
-  };
+  }, [movieId, mediaType]);
 
   if (!movieId) return null;
 
