@@ -29,7 +29,7 @@ export const tmdb = {
 
   // Get movie/show details
   getDetails: async (mediaType, id) => {
-    const res = await fetch(`${BASE_URL}/${mediaType}/${id}?api_key=${API_KEY}&append_to_response=videos`);
+    const res = await fetch(`${BASE_URL}/${mediaType}/${id}?api_key=${API_KEY}&append_to_response=videos,credits`);
     return res.json();
   },
 

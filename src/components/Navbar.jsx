@@ -52,7 +52,7 @@ function Navbar() {
             <a href="#" className="hover:text-gray-300 transition">TV Shows</a>
             <a href="#" className="hover:text-gray-300 transition">Movies</a>
             <a href="#" className="hover:text-gray-300 transition">New & Popular</a>
-            {user && <a href="#" className="hover:text-gray-300 transition">My List</a>}
+            {user && <Link to="/my-list" className="hover:text-gray-300 transition">My List</Link>}
           </div>
         </div>
 

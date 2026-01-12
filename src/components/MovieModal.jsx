@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import tmdb from '../services/tmdb';
+import { auth, db } from '../config/firebase';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 
 function MovieModal({ movieId, mediaType, onClose }) {
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [inMyList, setInMyList] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -23,7 +27,110 @@ function MovieModal({ movieId, mediaType, onClose }) {
     }
   }, [movieId, mediaType]);
 
+  // Check if movie is in user's list or liked
+  useEffect(() => {
+    const checkUserData = async () => {
+      if (!auth.currentUser || !movieId) return;
+
+      try {
+        const userDocRef = doc(db, 'users', auth.currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const movieKey = `${mediaType}_${movieId}`;
+          setInMyList(userData.myList?.includes(movieKey) || false);
+          setIsLiked(userData.liked?.includes(movieKey) || false);
+        }
+      } catch (err) {
+        console.error('Error checking user data:', err);
+      }
+    };
+
+    checkUserData();
+  }, [movieId, mediaType]);
+
   if (!movieId) return null;
+
+  // Handler for adding/removing from list
+  const handleToggleList = async () => {
+    if (!auth.currentUser) {
+      alert('Please sign in to add to your list');
+      return;
+    }
+
+    try {
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      const movieKey = `${mediaType}_${movieId}`;
+
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        // Create new user document
+        await setDoc(userDocRef, {
+          myList: [movieKey],
+          liked: []
+        });
+        setInMyList(true);
+      } else {
+        // Update existing document
+        if (inMyList) {
+          await updateDoc(userDocRef, {
+            myList: arrayRemove(movieKey)
+          });
+          setInMyList(false);
+        } else {
+          await updateDoc(userDocRef, {
+            myList: arrayUnion(movieKey)
+          });
+          setInMyList(true);
+        }
+      }
+    } catch (err) {
+      console.error('Error updating list:', err);
+      alert('Failed to update list');
+    }
+  };
+
+  // Handler for liking/unliking
+  const handleToggleLike = async () => {
+    if (!auth.currentUser) {
+      alert('Please sign in to like');
+      return;
+    }
+
+    try {
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      const movieKey = `${mediaType}_${movieId}`;
+
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        // Create new user document
+        await setDoc(userDocRef, {
+          myList: [],
+          liked: [movieKey]
+        });
+        setIsLiked(true);
+      } else {
+        // Update existing document
+        if (isLiked) {
+          await updateDoc(userDocRef, {
+            liked: arrayRemove(movieKey)
+          });
+          setIsLiked(false);
+        } else {
+          await updateDoc(userDocRef, {
+            liked: arrayUnion(movieKey)
+          });
+          setIsLiked(true);
+        }
+      }
+    } catch (err) {
+      console.error('Error updating like:', err);
+      alert('Failed to update like');
+    }
+  };
 
   // Get trailer
   const trailer = details?.videos?.results?.find(
@@ -135,21 +242,36 @@ function MovieModal({ movieId, mediaType, onClose }) {
               </h2>
               {/* Action Buttons */}
               <div className="flex gap-3 mb-6">
-                <button className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded hover:bg-white/80 transition font-semibold">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                  </svg>
-                  <span>Play</span>
+                <button
+                  onClick={handleToggleList}
+                  className={`w-10 h-10 border-2 rounded-full flex items-center justify-center transition ${
+                    inMyList
+                      ? 'bg-white border-white text-black'
+                      : 'border-gray-400 hover:border-white'
+                  }`}
+                  title={inMyList ? 'Remove from My List' : 'Add to My List'}
+                >
+                  {inMyList ? (
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  )}
                 </button>
 
-                <button className="w-10 h-10 border-2 border-gray-400 rounded-full flex items-center justify-center hover:border-white transition">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
-
-                <button className="w-10 h-10 border-2 border-gray-400 rounded-full flex items-center justify-center hover:border-white transition">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button
+                  onClick={handleToggleLike}
+                  className={`w-10 h-10 border-2 rounded-full flex items-center justify-center transition ${
+                    isLiked
+                      ? 'bg-white border-white text-black'
+                      : 'border-gray-400 hover:border-white'
+                  }`}
+                  title={isLiked ? 'Unlike' : 'Like'}
+                >
+                  <svg className="w-5 h-5" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                   </svg>
                 </button>
@@ -189,6 +311,15 @@ function MovieModal({ movieId, mediaType, onClose }) {
                       {details.genres?.map(g => g.name).join(', ')}
                     </span>
                   </div>
+
+                  {details.credits?.cast?.length > 0 && (
+                    <div>
+                      <span className="text-gray-400">Cast: </span>
+                      <span className="text-white">
+                        {details.credits.cast.slice(0, 5).map(actor => actor.name).join(', ')}
+                      </span>
+                    </div>
+                  )}
 
                   {details.production_companies?.length > 0 && (
                     <div>

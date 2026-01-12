@@ -24,7 +24,6 @@ const handleMovieClick = (movie) => {
   return (
     
      <div className="min-h-screen bg-[#141414]">
-    <div className="bg-red-500 text-white p-4">TAILWIND TEST</div> {/* ADD THIS */}
     <Navbar />
     <Hero />
       

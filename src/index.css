@@ -1,10 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
 
 * {
-  margin: 0;
-  padding: 0;
+  
   box-sizing: border-box;
 }
 
@@ -31,4 +29,38 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #888;
+}
+
+
+
+/* Modal utility classes that Tailwind v4 doesn't handle well */
+.modal-padding {
+  padding: 2rem;
+}
+
+.modal-gap {
+  gap: 0.75rem;
+}
+
+.modal-button-gap {
+  gap: 0.5rem;
+}
+
+.modal-info-gap {
+  gap: 1rem;
+}
+
+.modal-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .modal-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.mylist-item-hoverstate {
+  max-height: 100% !important;
 }
