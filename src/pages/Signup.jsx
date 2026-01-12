@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 function Signup() {
@@ -16,8 +16,8 @@ function Signup() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/');
+      await createUserWithEmailAndPassword(auth, email, password);
+      navigate('/home');
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') {
         setError('Email already in use');
@@ -37,7 +37,7 @@ function Signup() {
 
     try {
       await signInWithEmailAndPassword(auth, 'demo@netflix.com', 'demo123456');
-      navigate('/');
+      navigate('/home');
     } catch (err) {
       setError('Demo account not available');
     } finally {

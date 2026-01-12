@@ -17,7 +17,7 @@ function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/');
+      navigate('/home');
     } catch (err) {
       setError('Invalid email or password');
     } finally {
@@ -31,7 +31,7 @@ function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, 'demo@netflix.com', 'demo123456');
-      navigate('/');
+      navigate('/home');
     } catch (err) {
       setError('Demo account not available');
     } finally {

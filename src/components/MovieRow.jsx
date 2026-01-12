@@ -51,12 +51,17 @@ function MovieRow({ title, fetchUrl, onMovieClick, showTop10 = false }) {
               onClick={() => onMovieClick(movie)}
               className="min-w-[200px] md:min-w-[280px] cursor-pointer transform hover:scale-105 transition-transform duration-300 relative"
             >
-              {showTop10 && index < 10 && <Top10Badge rank={index + 1} />}
-              <img
-                src={tmdb.getImageUrl(movie.backdrop_path || movie.poster_path, 'w500')}
-                alt={movie.title || movie.name}
-                className="rounded-lg w-full h-[120px] md:h-[160px] object-cover"
-              />
+              <div className="relative">
+                {showTop10 && index < 10 && <Top10Badge rank={index + 1} />}
+                <img
+                  src={tmdb.getImageUrl(movie.backdrop_path || movie.poster_path, 'w500')}
+                  alt={movie.title || movie.name}
+                  className="rounded-lg w-full h-[120px] md:h-[160px] object-cover"
+                />
+              </div>
+              <div className="mt-2">
+                <h3 className="text-sm font-medium truncate">{movie.title || movie.name}</h3>
+              </div>
             </div>
           ))}
         </div>

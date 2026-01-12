@@ -60,15 +60,16 @@ function MovieModal({ movieId, mediaType, onClose, shouldResume = false }) {
     checkUserData();
   }, [movieId, mediaType]);
 
-  // Simulate watching progress - ONLY for Continue Watching items
+  // Simulate watching progress
   useEffect(() => {
     if (!movieId || !mediaType) return;
 
     let interval = null;
 
     // Start simulating watch progress after 3 seconds (user is "watching")
+    // Always start from 0% - shouldResume only affects the YouTube start time, not progress tracking
     const timer = setTimeout(async () => {
-      interval = await simulateWatching(movieId, mediaType, shouldResume);
+      interval = await simulateWatching(movieId, mediaType, false);
     }, 3000);
 
     // Cleanup function
@@ -76,7 +77,7 @@ function MovieModal({ movieId, mediaType, onClose, shouldResume = false }) {
       clearTimeout(timer);
       if (interval) clearInterval(interval);
     };
-  }, [movieId, mediaType, shouldResume]);
+  }, [movieId, mediaType]);
 
   if (!movieId) return null;
 
@@ -165,10 +166,11 @@ function MovieModal({ movieId, mediaType, onClose, shouldResume = false }) {
     v => v.type === 'Trailer' && v.site === 'YouTube'
   );
 
-  // Calculate start time for resume (assuming trailer is ~2 minutes / 120 seconds)
-  // Map progress percentage to video timestamp
+  // Calculate start time for resume
+  // Use conservative estimate: 90 second average trailer, cap at 60 seconds max
+  // This prevents issues with short trailers showing infinite loading
   const startTime = shouldResume && savedProgress > 0
-    ? Math.floor((savedProgress / 100) * 120) // 120 seconds = average trailer length
+    ? Math.min(Math.floor((savedProgress / 100) * 90), 60) // Cap at 60 seconds
     : 0;
 
   return (

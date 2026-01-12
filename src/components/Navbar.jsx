@@ -65,13 +65,13 @@ function Navbar() {
       <div className="flex items-center justify-between px-4 md:px-12 py-4">
         {/* Logo */}
         <div className="flex items-center space-x-8">
-          <Link to="/" className="text-red-600 text-2xl md:text-3xl font-bold">
+          <Link to="/home" className="text-red-600 text-2xl md:text-3xl font-bold">
             NETFLIX
           </Link>
-          
+
           {/* Nav Links */}
           <div className="hidden md:flex space-x-6 text-sm">
-            <Link to="/" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">Home</Link>
+            <Link to="/home" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">Home</Link>
             <Link to="/tv-shows" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">TV Shows</Link>
             <Link to="/movies" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">Movies</Link>
             <Link to="/new-and-popular" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">New & Popular</Link>
