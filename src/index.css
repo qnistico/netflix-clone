@@ -64,3 +64,7 @@ body {
 .mylist-item-hoverstate {
   max-height: 100% !important;
 }
+
+.ofy-hide {
+  overflow-y: hidden;
+}

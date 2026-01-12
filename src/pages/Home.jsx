@@ -22,10 +22,10 @@ const handleMovieClick = (movie) => {
   console.log('Current selectedMovie state:', selectedMovie); // ADD THIS
 
   return (
-    
+
      <div className="min-h-screen bg-[#141414]">
     <Navbar />
-    <Hero />
+    <Hero onMovieClick={handleMovieClick} />
       
       <div className="relative -mt-32 z-10">
         <MovieRow 

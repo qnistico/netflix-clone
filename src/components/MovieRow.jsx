@@ -24,10 +24,10 @@ function MovieRow({ title, fetchUrl, onMovieClick }) {
   return (
     <div className="px-4 md:px-12 my-8">
       <h2 className="text-xl md:text-2xl font-semibold mb-4">{title}</h2>
-      
+
       <div className="relative group">
         {/* Left arrow */}
-        <button 
+        <button
           onClick={() => scroll('left')}
           className="absolute left-0 top-0 bottom-0 z-10 w-12 bg-black/50 hover:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
         >
@@ -37,9 +37,9 @@ function MovieRow({ title, fetchUrl, onMovieClick }) {
         </button>
 
         {/* Movies container */}
-        <div 
+        <div
           ref={rowRef}
-          className="flex space-x-2 overflow-x-scroll scrollbar-hide"
+          className="flex space-x-2 overflow-x-scroll scrollbar-hide ofy-hide"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {movies.map((movie) => (

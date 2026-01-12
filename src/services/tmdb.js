@@ -27,6 +27,24 @@ export const tmdb = {
     return res.json();
   },
 
+  // Get TV shows by genre
+  getTVShowsByGenre: async (genreId) => {
+    const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreId}`);
+    return res.json();
+  },
+
+  // Get top rated movies
+  getTopRatedMovies: async () => {
+    const res = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}`);
+    return res.json();
+  },
+
+  // Get top rated TV shows
+  getTopRatedTVShows: async () => {
+    const res = await fetch(`${BASE_URL}/tv/top_rated?api_key=${API_KEY}`);
+    return res.json();
+  },
+
   // Get movie/show details
   getDetails: async (mediaType, id) => {
     const res = await fetch(`${BASE_URL}/${mediaType}/${id}?api_key=${API_KEY}&append_to_response=videos,credits`);

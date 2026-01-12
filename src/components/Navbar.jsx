@@ -60,9 +60,9 @@ function Navbar() {
           {/* Nav Links */}
           <div className="hidden md:flex space-x-6 text-sm">
             <Link to="/" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">Home</Link>
-            <a href="#" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">TV Shows</a>
-            <a href="#" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">Movies</a>
-            <a href="#" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">New & Popular</a>
+            <Link to="/tv-shows" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">TV Shows</Link>
+            <Link to="/movies" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">Movies</Link>
+            <Link to="/new-and-popular" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">New & Popular</Link>
             {user && <Link to="/my-list" className="hover:text-gray-300 transition-colors duration-200 hover:scale-105 inline-block">My List</Link>}
           </div>
         </div>

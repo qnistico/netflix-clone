@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import tmdb from '../services/tmdb';
 
-function Hero() {
+function Hero({ onMovieClick, mediaType = 'movie' }) {
   const [movie, setMovie] = useState(null);
 
   useEffect(() => {
     const fetchHeroMovie = async () => {
-      const data = await tmdb.getTrending('movie', 'week');
-      // Get a random trending movie for the hero
+      const data = await tmdb.getTrending(mediaType, 'week');
+      // Get a random trending movie/show for the hero
       const randomMovie = data.results[Math.floor(Math.random() * data.results.length)];
       setMovie(randomMovie);
     };
 
     fetchHeroMovie();
-  }, []);
+  }, [mediaType]);
 
   if (!movie) return null;
 
@@ -44,14 +44,20 @@ function Hero() {
         </p>
 
         <div className="flex space-x-3">
-          <button className="flex items-center space-x-2 bg-white text-black px-6 py-2 rounded hover:bg-white/80 transition font-semibold">
+          <button
+            onClick={() => onMovieClick && onMovieClick(movie)}
+            className="flex items-center space-x-2 bg-white text-black px-6 py-2 rounded hover:bg-white/80 transition-all duration-200 font-semibold hover:scale-105 active:scale-95"
+          >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
               <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
             </svg>
             <span>Play</span>
           </button>
 
-          <button className="flex items-center space-x-2 bg-gray-500/70 text-white px-6 py-2 rounded hover:bg-gray-500/50 transition font-semibold">
+          <button
+            onClick={() => onMovieClick && onMovieClick(movie)}
+            className="flex items-center space-x-2 bg-gray-500/70 text-white px-6 py-2 rounded hover:bg-gray-500/50 transition-all duration-200 font-semibold hover:scale-105 active:scale-95"
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
