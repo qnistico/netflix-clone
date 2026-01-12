@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import MyList from './pages/MyList';
+import Search from './pages/Search';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/my-list" element={<MyList />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
     </Router>
   );

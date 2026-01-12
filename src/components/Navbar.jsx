@@ -7,6 +7,8 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +37,15 @@ function Navbar() {
     }
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowSearch(false);
+      setSearchQuery('');
+    }
+  };
+
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       scrolled ? 'bg-[#141414]' : 'bg-gradient-to-b from-black/70 to-transparent'
@@ -58,11 +69,42 @@ function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center space-x-4">
-          <button className="hover:text-gray-300 transition">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </button>
+          {/* Search */}
+          <div className="relative">
+            {showSearch ? (
+              <form onSubmit={handleSearch} className="flex items-center">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search..."
+                  autoFocus
+                  className="bg-black/70 border border-white text-white px-4 py-1 rounded-md focus:outline-none focus:border-red-600 w-48 md:w-64"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSearch(false);
+                    setSearchQuery('');
+                  }}
+                  className="ml-2 hover:text-gray-300 transition"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setShowSearch(true)}
+                className="hover:text-gray-300 transition"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            )}
+          </div>
           
           {user ? (
             <div className="relative">
