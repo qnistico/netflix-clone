@@ -9,6 +9,7 @@ function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,11 +35,16 @@ function Navbar() {
       if (showDropdown && !event.target.closest('.profile-dropdown-container')) {
         setShowDropdown(false);
       }
+      if (showMobileMenu &&
+          !event.target.closest('.mobile-menu-container') &&
+          !event.target.closest('.mobile-menu-button')) {
+        setShowMobileMenu(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showDropdown]);
+  }, [showDropdown, showMobileMenu]);
 
   const handleLogout = async () => {
     try {
@@ -81,6 +87,16 @@ function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center space-x-4">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            className="mobile-menu-button md:hidden hover:text-gray-300 transition-all duration-200"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
           {/* Search */}
           <div className="relative">
             {showSearch ? (
@@ -179,6 +195,65 @@ function Navbar() {
           )}
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {showMobileMenu && (
+        <>
+          <style>{`
+            @keyframes slideDown {
+              from {
+                opacity: 0;
+                transform: translateY(-10px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+          `}</style>
+          <div className="md:hidden mobile-menu-container bg-black/95 border-t border-gray-800 animate-[slideDown_0.2s_ease-out]">
+            <div className="flex flex-col px-4 py-3 space-y-3">
+              <Link
+                to="/home"
+                onClick={() => setShowMobileMenu(false)}
+                className="text-sm hover:text-gray-300 transition-colors duration-200 py-2"
+              >
+                Home
+              </Link>
+              <Link
+                to="/tv-shows"
+                onClick={() => setShowMobileMenu(false)}
+                className="text-sm hover:text-gray-300 transition-colors duration-200 py-2"
+              >
+                TV Shows
+              </Link>
+              <Link
+                to="/movies"
+                onClick={() => setShowMobileMenu(false)}
+                className="text-sm hover:text-gray-300 transition-colors duration-200 py-2"
+              >
+                Movies
+              </Link>
+              <Link
+                to="/new-and-popular"
+                onClick={() => setShowMobileMenu(false)}
+                className="text-sm hover:text-gray-300 transition-colors duration-200 py-2"
+              >
+                New & Popular
+              </Link>
+              {user && (
+                <Link
+                  to="/my-list"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="text-sm hover:text-gray-300 transition-colors duration-200 py-2"
+                >
+                  My List
+                </Link>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </nav>
   );
 }

@@ -211,7 +211,6 @@ function MovieModal({ movieId, mediaType, onClose, shouldResume = false }) {
             position: 'relative',
             backgroundColor: '#181818',
             borderRadius: '0.5rem',
-            border: '0.0625rem solid rgba(128, 128, 128, 0.4)',
             width: '100%',
             maxWidth: '56rem',
             margin: '2rem 0',
