@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { auth, db } from '../config/firebase';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import tmdb from '../services/tmdb';
 
 function ContinueWatchingRow({ onMovieClick }) {
@@ -55,6 +55,7 @@ function ContinueWatchingRow({ onMovieClick }) {
 
             return {
               ...details,
+              firestoreDocId: item.id,
               mediaType: item.mediaType,
               progress: item.progress,
               lastWatched: item.lastWatched
@@ -81,6 +82,17 @@ function ContinueWatchingRow({ onMovieClick }) {
     if (rowRef.current) {
       const scrollAmount = direction === 'left' ? -400 : 400;
       rowRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const removeFromContinueWatching = async (e, movieId) => {
+    e.stopPropagation();
+    if (!user) return;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'watchProgress', String(movieId));
+      await deleteDoc(docRef);
+    } catch (err) {
+      console.error('Error removing from continue watching:', err);
     }
   };
 
@@ -112,7 +124,7 @@ function ContinueWatchingRow({ onMovieClick }) {
             <div
               key={item.id}
               onClick={() => onMovieClick({ id: item.id, media_type: item.mediaType, shouldResume: true })}
-              className="min-w-[200px] md:min-w-[280px] cursor-pointer transform hover:scale-105 transition-transform duration-300 relative"
+              className="group/item min-w-[200px] md:min-w-[280px] cursor-pointer transform hover:scale-105 transition-transform duration-300 relative"
             >
               <div className="relative">
                 <img
@@ -120,6 +132,16 @@ function ContinueWatchingRow({ onMovieClick }) {
                   alt={item.title || item.name}
                   className="rounded-lg w-full h-[120px] md:h-[160px] object-cover"
                 />
+                {/* Remove button - shows on hover */}
+                <button
+                  onClick={(e) => removeFromContinueWatching(e, item.firestoreDocId)}
+                  className="absolute top-2 right-2 w-7 h-7 bg-black/70 hover:bg-black rounded-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 hover:scale-110"
+                  title="Remove from Continue Watching"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
                 {/* Progress bar */}
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700 rounded-b-lg overflow-hidden">
                   <div
